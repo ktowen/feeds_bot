@@ -1,0 +1,27 @@
+{
+	"name": "towen/feeds_bot",
+	"type": "phpbb-extension",
+	"description": "XXXXX",
+	"homepage": "https://phpbb-es.com/",
+	"version": "1.0.0",
+	"time": "2016-3-05",
+	"license": "GPL-2.0",
+	"authors": [{
+			"name": "Pedro Almirall",
+			"email": "towenpa@gmail.com",
+			"homepage": "https://phpbb-es.com/",
+			"role": "Lead Developer"
+		}],
+	"require": {
+		"php": ">=5.3.3"
+	},
+	"require-dev": {
+		"phpbb/epv": "dev-master"
+	},
+	"extra": {
+		"display-name": "phpBB Feeds Bot",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.1.0-RC2,<3.2@dev"
+		}
+	}
+}

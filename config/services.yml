@@ -1,0 +1,19 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    towen.feeds_bot.cron.task.feeds_bot:
+        class: towen\feeds_bot\cron\task\feeds_bot
+        arguments:
+            - @config
+        calls:
+            - [set_name, [cron.task.feeds_bot]]
+        tags:
+            - { name: cron.task }
+    towen.feeds_bot.core.feed_parser:
+        class: phpbb\skeleton\controller\main
+        arguments:
+            - '@config'
+            - '@request'
+            - '@user'
+            - '%towen.feeds_bot.tables.feeds_bot%'

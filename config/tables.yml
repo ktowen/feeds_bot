@@ -1,0 +1,2 @@
+parameters:
+    towen.feeds_bot.tables.feeds_bot: %core.table_prefix%feeds_bot

@@ -273,13 +273,12 @@ class feeds_bot_module
             }
 
             $this->template->assign_block_vars('options', array(
-                    'KEY'			=> $config_key,
-                    'TITLE'			=> (isset($this->user->lang[$vars['lang']])) ? $this->user->lang[$vars['lang']] : $vars['lang'],
-                    'S_EXPLAIN'		=> $vars['explain'],
-                    'TITLE_EXPLAIN'	=> $l_explain,
-                    'CONTENT'		=> $content,
-                )
-            );
+                'KEY'			=> $config_key,
+                'TITLE'			=> (isset($this->user->lang[$vars['lang']])) ? $this->user->lang[$vars['lang']] : $vars['lang'],
+                'S_EXPLAIN'		=> $vars['explain'],
+                'TITLE_EXPLAIN'	=> $l_explain,
+                'CONTENT'		=> $content,
+            ));
 
             unset($display_vars['vars'][$config_key]);
         }

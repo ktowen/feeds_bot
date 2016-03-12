@@ -69,7 +69,6 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                     'KEYS' => array(
                         'update_interval'   => array('INDEX', 'update_interval'),
                         'last_update'       => array('INDEX', 'last_update'),
-                        'state'             => array('INDEX', 'state'),
                     ),
                 ),
             ),

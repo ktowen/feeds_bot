@@ -9,6 +9,10 @@
 
 namespace towen\feeds_bot\acp;
 
+/**
+ * Class feeds_bot_module
+ * @package towen\feeds_bot\acp
+ */
 class feeds_bot_module
 {
     /** @var \phpbb\cache\driver\driver_interface */
@@ -35,6 +39,10 @@ class feeds_bot_module
     /** @var string */
     public $u_action;
 
+    /**
+     * @param $id
+     * @param $mode
+     */
     public function main($id, $mode)
     {
         global $cache, $config, $db, $phpbb_log, $request, $template, $user;

@@ -10,16 +10,23 @@
 namespace towen\feeds_bot\cron\task;
 
 
+/**
+ * Class feeds_bot
+ * @package towen\feeds_bot\cron\task
+ */
 class feeds_bot extends \phpbb\cron\task\base
 {
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	public function __construct(\phpbb\config\config $config)
+    /**
+     * @param \phpbb\config\config $config
+     */
+    public function __construct(\phpbb\config\config $config)
 	{
 		$this->config = $config;
 	}
-	
+
 	public function run()
 	{
         $this->config->set('feeds_bot_last_gc', time(), true);

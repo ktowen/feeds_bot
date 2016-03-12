@@ -9,8 +9,15 @@
 
 namespace towen\feeds_bot\acp;
 
+/**
+ * Class feeds_bot_info
+ * @package towen\feeds_bot\acp
+ */
 class feeds_bot_info
 {
+    /**
+     * @return array
+     */
     public function module()
     {
         return array(

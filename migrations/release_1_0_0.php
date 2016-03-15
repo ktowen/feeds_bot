@@ -52,7 +52,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                 $this->table_prefix . 'feeds_bot' => array(
                     'COLUMNS' => array(
                         'feed_id'           => array('UINT', NULL, 'auto_increment'),
-                        'enabled'           => array('BOOL', 0),
+                        'state'           	=> array('BOOL', 0),
                         'url'               => array('VCHAR:255', ''),
                         'update_interval'   => array('USINT', 0),
                         'last_update'       => array('TIMESTAMP', 0),
@@ -61,6 +61,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                         'forum_id'          => array('USINT', 0),
                         'topic_id'          => array('USINT', 0),
                         'enqueue'           => array('BOOL', 0),
+						'censor_text'		=> array('BOOL', 0),
                         'max_msg'           => array('UINT', 0),
                         'subject_template'  => array('VCHAR:255', ''),
                         'body_template'     => array('VCHAR:255', ''),
@@ -69,6 +70,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                     'KEYS' => array(
                         'update_interval'   => array('INDEX', 'update_interval'),
                         'last_update'       => array('INDEX', 'last_update'),
+                        'state'       		=> array('INDEX', 'state'),
                     ),
                 ),
             ),

@@ -15,29 +15,8 @@ namespace towen\feeds_bot\acp;
  */
 class feeds_bot_module
 {
-    /** @var \phpbb\cache\driver\driver_interface */
-    protected $cache;
-
-    /** @var \phpbb\config\config */
-    protected $config;
-
-    /** @var \phpbb\db\driver\driver_interface */
-    protected $db;
-
-    /** @var \phpbb\log\log */
-    protected $log;
-
-    /** @var \phpbb\request\request */
-    protected $request;
-
-    /** @var \phpbb\template\template */
-    protected $emplate;
-
-    /** @var \phpbb\user */
-    protected $user;
-
-    /** @var string */
-    public $u_action;
+	/** @var string */
+	public $u_action;
 
     /**
      * @param $id
@@ -45,17 +24,9 @@ class feeds_bot_module
      */
     public function main($id, $mode)
     {
-        global $cache, $config, $db, $phpbb_log, $request, $template, $user;
+        global $cache, $config, $db, $phpbb_log, $request, $template, $user, $table_prefix;
 
-        $this->cache = $cache;
-        $this->config = $config;
-        $this->db = $db;
-        $this->log = $phpbb_log;
-        $this->request = $request;
-        $this->template = $template;
-        $this->user = $user;
-
-        $this->user->add_lang_ext('towen/feeds_bot', 'feeds_bot_acp');
+        $user->add_lang_ext('towen/feeds_bot', 'feeds_bot_acp');
 
         $form_key = 'acp_feeds_bot';
         add_form_key($form_key);
@@ -64,19 +35,22 @@ class feeds_bot_module
         {
             case 'list':
                 $this->tpl_name = 'acp_feeds_bot';
-                $action = $this->request->variable('action', '');
-                $this->page_title = $this->user->lang['ACP_FEEDS_BOT_LIST'];
+                $action = $request->variable('action', '');
+
+				if (!in_array($action, array('delete', 'add', 'edit', 'list')))
+				{
+					$action = 'list';
+				}
+				$this->page_title = $user->lang['ACP_FEEDS_BOT_'.strtoupper($action)];
 
                 if ($action == 'edit' || $action == 'delete')
                 {
-                    $feed_id = $this->request->variable('feed_id', 0);
+                    $feed_id = $request->variable('feed_id', 0);
 
                     if (!$feed_id)
                     {
-                        trigger_error($this->user->lang['NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+                        trigger_error($user->lang['NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
                     }
-
-                    $this->page_title = $this->user->lang['ACP_FEEDS_BOT_'.strtoupper($action)];
                 }
 
                 switch($action)
@@ -96,12 +70,15 @@ class feeds_bot_module
 
                         if (confirm_box(true))
                         {
+							$sql = 'DELETE FROM ' . "{$table_prefix}feeds_bot" . " WHERE feed_id = {$feed_id}";
+							$db->sql_query($sql);
 
-                            //$this->log.add('admin', 'LOG_FEEDS_BOT_FEED_DELETED'); TODO
+							//$phpbb_log->add('admin', 'LOG_FEEDS_BOT_FEED_DELETED'); TODO
+							trigger_error($user->lang['FEEDS_BOT_FEED_DELETED'] . adm_back_link($this->u_action));
                         }
                         else
                         {
-                            confirm_box(false, $this->user->lang('ACP_DELETE_CONFIRM'), build_hidden_fields(array(
+                            confirm_box(false, $user->lang('ACP_DELETE_CONFIRM'), build_hidden_fields(array(
                                 'feed_id'	=> $feed_id,
                                 'mode'		=> $mode,
                                 'action'	=> $action,
@@ -109,10 +86,13 @@ class feeds_bot_module
                         }
                     break;
 
-                    // case 'list':
+                    case 'list':
                     default:
 
 
+						$template->assign_vars(array(
+							'U_ACTION'			=> $this->u_action . '&amp;action=add',
+						));
                     break;
                 }
 
@@ -120,23 +100,23 @@ class feeds_bot_module
 
             case 'config':
                 $this->tpl_name = 'acp_feeds_bot_config';
-                $this->page_title = $this->user->lang['ACP_FEEDS_BOT_CONFIG'];
+                $this->page_title = $user->lang['ACP_FEEDS_BOT_CONFIG'];
 
                 $feeds_bot_enabled = $request->variable('feeds_bot_enabled', (bool)$config['feeds_bot_enabled']);
                 $feeds_bot_user_agent = $request->variable('feeds_bot_user_agent', (string)$config['feeds_bot_user_agent'], true);
                 $feeds_bot_gc = $request->variable('feeds_bot_gc', (int)($config['feeds_bot_gc']/60));
 
                 $error = array();
-                $submit = $this->request->is_set_post('submit');
+                $submit = $request->is_set_post('submit');
 
                 if ($submit && !check_form_key($form_key))
                 {
-                    $error[] = $this->user->lang['FORM_INVALID'];
+                    $error[] = $user->lang['FORM_INVALID'];
                 }
 
                 if ($feeds_bot_gc < 10)
                 {
-                    $error[] = $this->user->lang['FEEDS_BOT_GC_INVALID'];
+                    $error[] = $user->lang['FEEDS_BOT_GC_INVALID'];
                 }
 
                 // Do not write values if there is an error
@@ -146,13 +126,13 @@ class feeds_bot_module
                     set_config('feeds_bot_user_agent', $feeds_bot_user_agent);
                     set_config('feeds_bot_gc', $feeds_bot_gc * 60);
 
-                    //$this->log->add('admin', 'LOG_FEEDS_BOT_CONFIG_UPDATED'); // TODO
+                    //$phpbb_log->add('admin', 'LOG_FEEDS_BOT_CONFIG_UPDATED'); // TODO
 
-                    trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action), E_USER_NOTICE);
+                    trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action), E_USER_NOTICE);
                 }
 
-                $this->template->assign_vars(array(
-                    'L_TITLE'			=> $this->user->lang['ACP_FEEDS_BOT_CONFIG'],
+                $template->assign_vars(array(
+                    'L_TITLE'			=> $user->lang['ACP_FEEDS_BOT_CONFIG'],
 
                     'S_ERROR'			=> (sizeof($error)) ? true : false,
                     'ERROR_MSG'			=> implode('<br />', $error),

@@ -27,7 +27,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
             array('config.add', array('feeds_bot_version', '1.0.0')),
 
             array('config.add', array('feeds_bot_last_gc', 0, true)),
-            array('config.add', array('feeds_bot_gc', 10*60)),
+            array('config.add', array('feeds_bot_gc', 20*60)),
 
             array('config.add', array('feeds_bot_enabled', true)),
             array('config.add', array('feeds_bot_user_agent', '')),
@@ -56,9 +56,8 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                         'url'               => array('VCHAR:255', ''),
                         'update_interval'   => array('USINT', 0),
                         'last_update'       => array('TIMESTAMP', 0),
-                        'poster_id'         => array('USINT', 0),
                         'poster_username'   => array('VCHAR:100', ''),
-                        'new_topic'           => array('BOOL', 0),
+                        'new_topic'         => array('BOOL', 0),
                         'forum_id'          => array('USINT', 0),
                         'topic_id'          => array('USINT', 0),
                         'enqueue'           => array('BOOL', 0),

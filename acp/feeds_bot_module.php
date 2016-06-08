@@ -27,9 +27,15 @@ class feeds_bot_module
         global $cache, $config, $db, $phpbb_log, $request, $template, $user, $table_prefix;
 
         $user->add_lang_ext('towen/feeds_bot', 'feeds_bot_acp');
+		$submit = $request->is_set_post('submit');
 
         $form_key = 'acp_feeds_bot';
         add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
         switch($mode)
         {
@@ -55,14 +61,110 @@ class feeds_bot_module
 
                 switch($action)
                 {
-                    case 'edit':
-
-                    // no break;
-
                     case 'add':
+                    case 'edit':
+						$template_array = $error = array();
+
+						$settings = array(
+							'state'			 	=> 1,
+							'url'			 	=> '',
+							'update_interval'	=> 20,
+							'poster_username'	=> $user->lang['GUEST'],
+							'new_topic'			=> false,
+							'forum_id'			=> 0,
+							'topic_id'			=> 0,
+							'max_msg'			=> 10,
+							'enqueue'			=> true,
+							'censor_text'		=> true,
+							'subject_template'	=> "{ENTRY_TITLE}",
+							'body_template'		=> "{ENTRY_BODY}\n--\n{ENTRY_LINK}",
+						);
+
+						if ($action == 'edit') {
+							$sql = 'SELECT ' . implode(array_keys($settings), ', ') . "
+									FROM {$table_prefix}feeds_bot
+									WHERE feed_id = {$feed_id}";
+							$result = $db->sql_query($sql);
+							$settings = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+						}
+
+						if ($submit) {
+							foreach($settings as $setting => $value) {
+								$unicode = in_array($setting, array('poster_username', 'subject_template', 'body_template'));
+								$settings[$setting] = $request->variable('feed_'.$setting, $settings[$setting], $unicode);
+							}
+
+							// validation
+							if ($settings['update_interval'] < 20) {
+								$error[] = $user->lang('FEEDS_BOT_INVALID_UPDATE_INTERVAL');
+							}
+
+							if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $settings['url']) &&
+								!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $settings['url'])) {
+								$error[] = $user->lang('FEEDS_BOT_INVALID_URL');
+							}
+
+//							if (check_feeds($settings['url'])) {
+//								$error[] = $user->lang('FEEDS_BOT_INVALID_FEED');
+//							}
+
+							if ($settings['new_topic']) {
+								$sql = "SELECT forum_type
+									FROM {$table_prefix}forums
+									WHERE forum_id = {$settings['forum_id']}";
+								$result = $db->sql_query($sql);
+								$row = $db->sql_fetchrow($result);
+								$db->sql_freeresult($result);
+
+								if (!$row) {
+									$error[] = $user->lang('FEEDS_BOT_NO_FORUM');
+								}
+								elseif ($row['forum_type'] != FORUM_POST) {
+									$error[] = $user->lang('FEEDS_BOT_INVALID_FORUM');
+								}
+							}
+							else {
+								$sql = "SELECT topic_id
+									FROM {$table_prefix}topics
+									WHERE topic_id = {$settings['topic_id']}";
+								$result = $db->sql_query($sql);
+								$row = $db->sql_fetchrow($result);
+								$db->sql_freeresult($result);
+
+								if (!$row) {
+									$error[] = $user->lang('FEEDS_BOT_NO_TOPIC');
+								}
+							}
+
+							if (empty($error)) {
+								if ($mode == 'edit') {
+									$sql = "UPDATE {$table_prefix}feeds_bot SET " . $db->sql_build_array('UPDATE', $settings) . "
+											WHERE feed_id = {$feed_id}";
+									$message = $user->lang("FEEDS_BOT_FEED_UPDATED");
+								}
+								else {
+									$sql = "INSERT INTO {$table_prefix}feeds_bot " . $db->sql_build_array('INSERT', $settings);
+									$message = $user->lang("FEEDS_BOT_FEED_ADDED");
+								}
+								var_dump($sql);
+								$db->sql_query($sql);
+								trigger_error($message . adm_back_link($this->u_action), E_USER_NOTICE);
+							}
+						}
+
+						foreach ($settings as $setting => $value) {
+							$key = 'FEED_'.strtoupper($setting);
+							$template->assign_var($key, htmlspecialchars($value));
+						}
 
                         $template->assign_vars(array(
                             'S_EDIT' => true,
+							'U_ACTION' => $this->u_action . '&amp;action=add',
+
+							'S_ERROR'			=> (sizeof($error)) ? true : false,
+							'ERROR_MSG'			=> implode('<br />', $error),
                         ));
                     break;
 
@@ -107,14 +209,13 @@ class feeds_bot_module
                 $feeds_bot_gc = $request->variable('feeds_bot_gc', (int)($config['feeds_bot_gc']/60));
 
                 $error = array();
-                $submit = $request->is_set_post('submit');
 
                 if ($submit && !check_form_key($form_key))
                 {
                     $error[] = $user->lang['FORM_INVALID'];
                 }
 
-                if ($feeds_bot_gc < 10)
+                if ($feeds_bot_gc < 20)
                 {
                     $error[] = $user->lang['FEEDS_BOT_GC_INVALID'];
                 }

@@ -55,7 +55,7 @@ class feeds_bot_module
 
                     if (!$feed_id)
                     {
-                        trigger_error($user->lang['NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+                        trigger_error($user->lang['FEEDS_BOT_NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
                     }
                 }
 
@@ -88,6 +88,10 @@ class feeds_bot_module
 							$settings = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 
+							if (!$settings)
+							{
+								trigger_error($user->lang['FEEDS_BOT_NO_FEED'] . adm_back_link($this->u_action), E_USER_WARNING);
+							}
 						}
 
 						if ($submit) {
@@ -107,7 +111,7 @@ class feeds_bot_module
 							}
 
 //							if (check_feeds($settings['url'])) {
-//								$error[] = $user->lang('FEEDS_BOT_INVALID_FEED');
+//								$error[] = $user->lang('FEEDS_BOT_INVALID_FEED'); //TODO
 //							}
 
 							if ($settings['new_topic']) {
@@ -148,7 +152,7 @@ class feeds_bot_module
 									$sql = "INSERT INTO {$table_prefix}feeds_bot " . $db->sql_build_array('INSERT', $settings);
 									$message = $user->lang("FEEDS_BOT_FEED_ADDED");
 								}
-								var_dump($sql);
+
 								$db->sql_query($sql);
 								trigger_error($message . adm_back_link($this->u_action), E_USER_NOTICE);
 							}
@@ -156,12 +160,12 @@ class feeds_bot_module
 
 						foreach ($settings as $setting => $value) {
 							$key = 'FEED_'.strtoupper($setting);
-							$template->assign_var($key, htmlspecialchars($value));
+							$template->assign_var($key, $value);
 						}
 
                         $template->assign_vars(array(
                             'S_EDIT' => true,
-							'U_ACTION' => $this->u_action . '&amp;action=add',
+							'U_ACTION' => $this->u_action . "&amp;action={$action}" . ($action=='edit' ? "&amp;feed_id={$feed_id}" : ''),
 
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'ERROR_MSG'			=> implode('<br />', $error),

@@ -116,9 +116,9 @@
 
 <!-- ELSE -->
 
-<h1>{L_ACP_FEEDS_BOT}</h1>
+<h1>{L_ACP_FEEDS_BOT_LIST}</h1>
 
-<p>{L_ACP_FEEDS_BOT_EXPLAIN}</p>
+<p>{L_ACP_FEEDS_BOT_LIST_EXPLAIN}</p>
 
 <form id="acp_feeds_bot" method="post" action="{U_ACTION}">
     <fieldset class="tabulated">
@@ -127,15 +127,19 @@
         <table class="table1 zebra-table" id="down">
             <thead>
             <tr>
-                <th>{L_FEED_NAME}</th>
+                <th>{L_FEED_URL}</th>
+                <th>{L_FEED_LAST_UPDATE}</th>
+                <th>{L_FEED_STATE}</th>
                 <th>{L_ACTION}</th>
             </tr>
             </thead>
             <tbody>
-            <!-- BEGIN feeds -->
+            <!-- BEGIN feed -->
             <tr>
-                <td style="text-align: center;">{feeds.NAME}</td>
-                <td class="actions"> <a href="{feeds.U_UPDATE}">{ICON_SYNC}</a> <a href="{feeds.U_EDIT}">{ICON_EDIT}</a> <a href="{feeds.U_DELETE}">{ICON_DELETE}</a> </td>
+                <td>{feed.URL}</td>
+                <td style="text-align: center;">{feed.LAST_UPDATE}</td>
+                <td style="text-align: center;">{feed.STATE}</td>
+                <td class="actions"> <a href="{feed.U_UPDATE}">{ICON_SYNC}</a> <a href="{feed.U_EDIT}">{ICON_EDIT}</a> <a href="{feed.U_DELETE}">{ICON_DELETE}</a> </td>
             </tr>
             <!-- BEGINELSE -->
             <tr class="row3">

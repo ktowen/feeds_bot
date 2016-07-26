@@ -6,11 +6,7 @@ services:
         class: towen\feeds_bot\cron\task\feeds_bot
         arguments:
             - @config
-            - @log
-            - @towen.feeds_bot.core.posting_bot
-            - @towen.feeds_bot.core.feed_parser
-            - @towen.feeds_bot.core.feed_loader
-            - %towen.feeds_bot.tables.feeds_bot%
+            - @towen.feeds_bot.core.feeds_bot
         calls:
             - [set_name, [cron.task.feeds_bot]]
         tags:
@@ -29,12 +25,16 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    towen.feeds_bot.core.posting_bot:
-        class: towen\feeds_bot\core\posting_bot
+    towen.feeds_bot.core.feeds_bot:
+        class: towen\feeds_bot\core\feeds_bot
         arguments:
             - @config
             - @dispatcher
             - @dbal.conn
+            - @log
+            - @towen.feeds_bot.core.feed_parser
+            - @towen.feeds_bot.core.feed_loader
+            - %towen.feeds_bot.tables.feeds_bot%
             - %core.root_path%
             - %core.php_ext%
 
@@ -46,11 +46,11 @@ services:
             - { name: service_collection, tag: towen.feeds_bot.feeds.type }
 
     towen.feeds_bot.feeds.type.atom:
-        class: towen\feeds_bot\core\feeds\atom
+        class: towen\feeds_bot\feeds\type\atom
         tags:
             - { name: towen.feeds_bot.feeds.type }
 
     towen.feeds_bot.feeds.type.rss:
-        class: towen\feeds_bot\core\feeds\rss
+        class: towen\feeds_bot\feeds\type\rss
         tags:
             - { name: towen.feeds_bot.feeds.type }

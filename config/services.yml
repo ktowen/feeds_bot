@@ -14,6 +14,8 @@ services:
 
     towen.feeds_bot.core.feed_loader:
         class: towen\feeds_bot\core\feed_loader
+        arguments:
+            - @config
 
     towen.feeds_bot.core.feed_parser:
         class: towen\feeds_bot\core\feed_parser

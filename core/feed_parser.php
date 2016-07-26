@@ -15,7 +15,6 @@ class feed_parser {
 	protected $user;
 	protected $phpbb_dispatcher;
 	protected $feed_types;
-	protected $feed_loader;
 	protected $phpbb_root_path;
 	protected $php_ext;
 
@@ -26,6 +25,7 @@ class feed_parser {
 		$this->config = $config;
 		$this->user = $user;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->feed_types = $feed_types;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}

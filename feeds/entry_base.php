@@ -10,30 +10,19 @@
 namespace towen\feeds_bot\feeds;
 
 /**
- * Class item_base
+ * Class entry_base
  * @package towen\feeds_bot\feeds
  */
-abstract class item_base {
+abstract class entry_base {
 	/**
-	 * @var string
+	 * @var \SimpleXMLElement
 	 */
-	protected $title;
+	protected $xml;
+
 	/**
-	 * @var string
+	 * @param \SimpleXMLElement $xml
 	 */
-	protected $content;
-	/**
-	 * @var string
-	 */
-	protected $id;
-	/**
-	 * @var string
-	 */
-	protected $link;
-	/**
-	 * @var string
-	 */
-	protected $pub_date;
+	abstract function __construct(\SimpleXMLElement $xml);
 
 	/**
 	 * @return string

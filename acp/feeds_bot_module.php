@@ -66,7 +66,7 @@ class feeds_bot_module
 						$template_array = $error = array();
 
 						$settings = array(
-							'state'			 	=> 1,
+							'enabled'			 	=> 1,
 							'url'			 	=> '',
 							'update_interval'	=> 20,
 							'poster_username'	=> $user->lang['GUEST'],

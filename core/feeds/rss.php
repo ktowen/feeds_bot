@@ -7,4 +7,12 @@
 *
 */
 
-namespace towen\feeds_bot\core\feeds\rss;
+namespace towen\feeds_bot\core\feeds;
+
+/**
+ * Class rss
+ * @package towen\feeds_bot\core\feeds
+ */
+class rss extends towen\feeds_bot\core\feeds\channel_base {
+
+}

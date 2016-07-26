@@ -11,11 +11,6 @@ namespace towen\feeds_bot\migrations;
 
 class release_1_0_0 extends \phpbb\db\migration\migration
 {
-	public function effectively_installed()
-	{
-		return isset($this->config['feeds_bot_version']);
-	}
-
 	static public function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\alpha2');
@@ -52,7 +47,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                 $this->table_prefix . 'feeds_bot' => array(
                     'COLUMNS' => array(
                         'feed_id'           => array('UINT', NULL, 'auto_increment'),
-                        'state'           	=> array('BOOL', 0),
+                        'enabled'           	=> array('BOOL', 0),
                         'url'               => array('VCHAR:255', ''),
                         'update_interval'   => array('USINT', 0),
                         'last_update'       => array('TIMESTAMP', 0),

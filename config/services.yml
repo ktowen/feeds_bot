@@ -6,14 +6,51 @@ services:
         class: towen\feeds_bot\cron\task\feeds_bot
         arguments:
             - @config
+            - @log
+            - @towen.feeds_bot.core.posting_bot
+            - @towen.feeds_bot.core.feed_parser
+            - @towen.feeds_bot.core.feed_loader
+            - %towen.feeds_bot.tables.feeds_bot%
         calls:
             - [set_name, [cron.task.feeds_bot]]
         tags:
             - { name: cron.task }
+
+    towen.feeds_bot.core.feed_loader:
+        class: towen\feeds_bot\core\feed_loader
+
     towen.feeds_bot.core.feed_parser:
-        class: phpbb\skeleton\controller\main
+        class: towen\feeds_bot\core\feed_parser
         arguments:
-            - '@config'
-            - '@request'
-            - '@user'
-            - '%towen.feeds_bot.tables.feeds_bot%'
+            - @config
+            - @user
+            - @dispatcher
+            - @towen.feeds_bot.feeds.type_collection
+            - %core.root_path%
+            - %core.php_ext%
+
+    towen.feeds_bot.core.posting_bot:
+        class: towen\feeds_bot\core\posting_bot
+        arguments:
+            - @config
+            - @dispatcher
+            - @dbal.conn
+            - %core.root_path%
+            - %core.php_ext%
+
+    towen.feeds_bot.feeds.type_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: towen.feeds_bot.feeds.type }
+
+    towen.feeds_bot.feeds.type.atom:
+        class: towen\feeds_bot\core\feeds\atom
+        tags:
+            - { name: towen.feeds_bot.feeds.type }
+
+    towen.feeds_bot.feeds.type.rss:
+        class: towen\feeds_bot\core\feeds\rss
+        tags:
+            - { name: towen.feeds_bot.feeds.type }

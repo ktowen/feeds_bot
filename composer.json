@@ -13,7 +13,8 @@
 			"role": "Lead Developer"
 		}],
 	"require": {
-		"php": ">=5.3.3"
+		"php": ">=5.3.3",
+		"libxml": ">=2.6.0"
 	},
 	"require-dev": {
 		"phpbb/epv": "dev-master"

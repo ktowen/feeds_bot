@@ -7,12 +7,12 @@
 *
 */
 
-namespace towen\feeds_bot\core\feeds;
+namespace towen\feeds_bot\feeds\type;
 
 /**
  * Class atom
  * @package towen\feeds_bot\core\feeds
  */
-class atom extends towen\feeds_bot\core\feeds\channel_base {
+class atom extends towen\feeds_bot\feeds\channel_base {
 
 }

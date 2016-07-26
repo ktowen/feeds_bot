@@ -7,11 +7,11 @@
  *
  */
 
-namespace towen\feeds_bot\core\feeds;
+namespace towen\feeds_bot\feeds;
 
 /**
  * Class channel_base
- * @package towen\feeds_bot\core\feeds
+ * @package towen\feeds_bot\feeds
  */
 abstract class channel_base {
 	/**

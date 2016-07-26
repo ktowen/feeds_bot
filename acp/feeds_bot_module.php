@@ -24,7 +24,7 @@ class feeds_bot_module
      */
     public function main($id, $mode)
     {
-        global $cache, $config, $db, $phpbb_log, $request, $template, $user, $table_prefix;
+        global $cache, $config, $db, $phpbb_log, $phpbb_container, $request, $template, $user, $table_prefix;
 
         $user->add_lang_ext('towen/feeds_bot', 'feeds_bot_acp');
 		$submit = $request->is_set_post('submit');
@@ -43,7 +43,7 @@ class feeds_bot_module
                 $this->tpl_name = 'acp_feeds_bot';
                 $action = $request->variable('action', '');
 
-				if (!in_array($action, array('delete', 'add', 'edit', 'list')))
+				if (!in_array($action, array('delete', 'add', 'edit', 'list' ,'update', 'check')))
 				{
 					$action = 'list';
 				}
@@ -191,6 +191,12 @@ class feeds_bot_module
                             )));
                         }
                     break;
+
+					case 'update':
+					break;
+
+					case 'check':
+					break;
 
                     case 'list':
                     default:

@@ -20,7 +20,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function description()
 	{
-		// TODO: Implement description() method.
+		return (string) $this->xml->subtitle;
 	}
 
 	/**
@@ -28,7 +28,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function title()
 	{
-		// TODO: Implement title() method.
+		return (string) $this->xml->title;
 	}
 
 	/**
@@ -36,7 +36,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function pub_date()
 	{
-		// TODO: Implement pub_date() method.
+		return strtotime($this->xml->updated);
 	}
 
 	/**
@@ -44,7 +44,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function link()
 	{
-		// TODO: Implement link() method.
+		return (string) $this->xml->link['href'];
 	}
 
 	/**
@@ -52,7 +52,12 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function entries()
 	{
-		// TODO: Implement entries() method.
+		$entries = array();
+		foreach($this->xml->entry as $entry)
+		{
+			$entries[] = new atom_entry($entry);
+		}
+		return $entries;
 	}
 
 	/**
@@ -60,7 +65,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function is_valid()
 	{
-		// TODO: Implement in_valid() method.
+		return !empty($this->xml->entry);
 	}
 
 	/**
@@ -68,7 +73,7 @@ class atom extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function load_xml(\SimpleXMLElement $xml)
 	{
-		// TODO: Implement load_xml() method.
+		$this->xml = $xml;
 	}
 }
 
@@ -83,7 +88,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function __construct(\SimpleXMLElement $xml)
 	{
-		// TODO: Implement __construct() method.
+		$this->xml = $xml;
 	}
 
 	/**
@@ -91,7 +96,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function title()
 	{
-		// TODO: Implement title() method.
+		return (string) $this->xml->title;
 	}
 
 	/**
@@ -99,7 +104,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function content()
 	{
-		// TODO: Implement content() method.
+		return (string) $this->xml->content;
 	}
 
 	/**
@@ -107,7 +112,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function id()
 	{
-		// TODO: Implement id() method.
+		return (string) $this->xml->id;
 	}
 
 	/**
@@ -115,7 +120,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function link()
 	{
-		// TODO: Implement link() method.
+		return (string) $this->xml->link['href'];
 	}
 
 	/**
@@ -123,6 +128,7 @@ class atom_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function pub_date()
 	{
-		// TODO: Implement pub_date() method.
+		$date = $this->xml->updated ? 'updated' : 'published';
+		return strtotime($this->xml->$date);
 	}
 }

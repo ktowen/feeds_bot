@@ -20,7 +20,7 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function description()
 	{
-		// TODO: Implement description() method.
+		return (string) $this->xml->channel->description;
 	}
 
 	/**
@@ -28,7 +28,7 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function title()
 	{
-		// TODO: Implement title() method.
+		return (string) $this->xml->channel->title;
 	}
 
 	/**
@@ -36,7 +36,8 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function pub_date()
 	{
-		// TODO: Implement pub_date() method.
+		$date = $this->xml->channel->lastBuildDate ? 'lastBuildDate' : 'pubDate';
+		return strtotime($this->xml->channel->$date);
 	}
 
 	/**
@@ -44,7 +45,7 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function link()
 	{
-		// TODO: Implement link() method.
+		return (string) $this->xml->channel->title;
 	}
 
 	/**
@@ -52,7 +53,12 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function entries()
 	{
-		// TODO: Implement entries() method.
+		$entries = array();
+		foreach($this->xml->channel->item as $entry)
+		{
+			$entries[] = new rss_entry($entry);
+		}
+		return $entries;
 	}
 
 	/**
@@ -60,7 +66,7 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function is_valid()
 	{
-		// TODO: Implement in_valid() method.
+		return !empty($this->xml->channel->item);
 	}
 
 	/**
@@ -68,7 +74,7 @@ class rss extends \towen\feeds_bot\feeds\channel_base {
 	 */
 	function load_xml(\SimpleXMLElement $xml)
 	{
-		// TODO: Implement load_xml() method.
+		$this->xml = $xml;
 	}
 }
 
@@ -83,7 +89,7 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function __construct(\SimpleXMLElement $xml)
 	{
-		// TODO: Implement __construct() method.
+		$this->xml = $xml;
 	}
 
 	/**
@@ -91,7 +97,7 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function title()
 	{
-		// TODO: Implement title() method.
+		return (string) $this->xml->title;
 	}
 
 	/**
@@ -99,7 +105,7 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function content()
 	{
-		// TODO: Implement content() method.
+		return (string) $this->xml->description;
 	}
 
 	/**
@@ -107,7 +113,7 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function id()
 	{
-		// TODO: Implement id() method.
+		return (string) $this->xml->guid;
 	}
 
 	/**
@@ -115,7 +121,7 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function link()
 	{
-		// TODO: Implement link() method.
+		return (string) $this->xml->link;
 	}
 
 	/**
@@ -123,6 +129,6 @@ class rss_entry extends \towen\feeds_bot\feeds\entry_base {
 	 */
 	function pub_date()
 	{
-		// TODO: Implement pub_date() method.
+		return (string) $this->xml->pubDate;
 	}
 }

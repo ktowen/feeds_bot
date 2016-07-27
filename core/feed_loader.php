@@ -21,7 +21,7 @@ class feed_loader {
 		$old_user_agent = ini_get('user_agent');
 		ini_set("user_agent", $this->config['feeds_bot_user_agent']);
 
-		$xml = @simplexml_load_file($url);
+		$xml = @simplexml_load_file($url, null, LIBXML_NOCDATA);
 
 		ini_set("user_agent", $old_user_agent);
 

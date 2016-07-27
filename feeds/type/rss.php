@@ -13,7 +13,7 @@ namespace towen\feeds_bot\feeds\type;
  * Class rss
  * @package towen\feeds_bot\feeds\type
  */
-class rss extends \towen\feeds_bot\feeds\channel_base {
+class rss extends \towen\feeds_bot\feeds\feed_base {
 
 	/**
 	 * @return string

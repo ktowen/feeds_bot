@@ -13,7 +13,7 @@ namespace towen\feeds_bot\feeds;
  * Class channel_base
  * @package towen\feeds_bot\feeds
  */
-abstract class channel_base {
+abstract class feed_base {
 	/**
 	 * @var \SimpleXMLElement
 	 */

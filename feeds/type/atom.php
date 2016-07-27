@@ -13,7 +13,7 @@ namespace towen\feeds_bot\feeds\type;
  * Class atom
  * @package towen\feeds_bot\feeds\type
  */
-class atom extends \towen\feeds_bot\feeds\channel_base {
+class atom extends \towen\feeds_bot\feeds\feed_base {
 
 	/**
 	 * @return string

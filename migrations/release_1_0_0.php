@@ -51,6 +51,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                         'url'               => array('VCHAR:255', ''),
                         'update_interval'   => array('USINT', 0),
                         'last_update'       => array('TIMESTAMP', 0),
+                        'last_entry_date'       => array('TIMESTAMP', 0),
                         'poster_username'   => array('VCHAR:100', ''),
                         'new_topic'         => array('BOOL', 0),
                         'forum_id'          => array('USINT', 0),

@@ -25,8 +25,8 @@ class feeds_bot_info
             'title'		=> 'ACP_FEEDS_BOT',
             'version'	=> '1.0.0',
             'modes'		=> array(
-                'list'	=> array(
-                    'title'	=> 'ACP_FEEDS_BOT_LIST',
+                'manage'	=> array(
+                    'title'	=> 'ACP_FEEDS_BOT_MANAGE',
                     'auth'	=> 'ext_towen/feeds_bot && acl_a_towen_feeds_bot_manage',
                     'cat'	=> array('ACP_FEEDS_BOT')),
                 'config'	=> array(

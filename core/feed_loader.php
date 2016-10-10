@@ -9,7 +9,8 @@
 
 namespace towen\feeds_bot\core;
 
-class feed_loader {
+class feed_loader
+{
 	protected $config;
 
 	public function __construct(\phpbb\config\config $config)
@@ -17,7 +18,8 @@ class feed_loader {
 		$this->config = $config;
 	}
 
-	public function getXML($url) {
+	public function getXML($url)
+	{
 		$old_user_agent = ini_get('user_agent');
 		ini_set("user_agent", $this->config['feeds_bot_user_agent']);
 

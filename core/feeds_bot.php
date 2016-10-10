@@ -9,7 +9,8 @@
 
 namespace towen\feeds_bot\core;
 
-class feeds_bot {
+class feeds_bot
+{
 
 	protected $config;
 	protected $phpbb_dispatcher;
@@ -35,23 +36,9 @@ class feeds_bot {
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
-	//todo
-	/*
-	 * cargar configuracion de los feed
-	 * si hay alguno pendiente, para cada uno:
-	 * 		llamar al loader
-	 * 		si abre:
-	 * 			si hay mensajes nuevos:
-	 * 				llamar al parser
-	 * 				llamar al posting bot
-	 * 			configurar ultima entrada al feed
-	 * 		si no abre:
-	 * 			agregar un log
-	 * 			desactivarlo
-	 * 		actualizar ultima entrada al cron
-	 */
 
-	public function get_feeds_data(array $feeds_id) {
+	public function get_feeds_data(array $feeds_id)
+	{
 		$sql = "SELECT feed_id, enabled, url, update_interval, last_update, last_entry_date, poster_username,
 					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, subject_template, body_template
 				FROM {$this->table}
@@ -63,7 +50,8 @@ class feeds_bot {
 		return $feeds_data;
 	}
 
-	public function get_pending_feeds() {
+	public function get_pending_feeds()
+	{
 		$now = time();
 		$sql = "SELECT feed_id, enabled, url, update_interval, last_update, last_entry_date, poster_username,
 					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, subject_template, body_template
@@ -76,25 +64,37 @@ class feeds_bot {
 		return $feeds_data;
 	}
 
-	public function handle_feed($feed_config) {
-		$return = false;
-		$feed_xml = $this->feed_loader->getXML($feed_config['url']);
+	public function load_feed($url)
+	{
+		$feed_xml = $this->feed_loader->getXML($url);
 
 		if (!$feed_xml)
 		{
-			$this->feed_error('FEED_BOT_FEED_LOADER_ERROR', $feed_config);
-			return false;
+			throw new \Exception('FEED_BOT_FEED_LOADER_ERROR');
 		}
-
-		$last_entry_date = 0;
 
 		$feed_object = $this->feed_parser->get_feed_object($feed_xml);
 
 		if (!$feed_object)
 		{
-			$this->feed_error('FEED_BOT_FEED_PARSER_ERROR', $feed_config);
-			return false;
+			throw new \Exception('FEED_BOT_FEED_PARSER_ERROR');
 		}
+
+		return $feed_object;
+	}
+
+	public function handle_feed($feed_config)
+	{
+		try
+		{
+			$feed_object = $this->load_feed($feed_config['url']);
+		}
+		catch (\Exception $e)
+		{
+			return $this->feed_error($e.getMessage(), $feed_config);
+		}
+
+		$last_entry_date = $feed_config['last_entry_date'];
 
 		foreach ($feed_object->entries() as $entry)
 		{
@@ -111,35 +111,34 @@ class feeds_bot {
 
 		$update_array = array(
 			'last_update'	=> time(),
+//			'last_entry_date'	=> $last_entry_date,
 		);
 
-		if ($last_entry_date)
-		{
-			$return = true;
-			$update_array = array_merge($update_array, array(
-				'last_entry_date'	=> $last_entry_date,
-			));
-		}
 		$sql = "UPDATE {$this->table} SET ". $this->db->sql_build_array('UPDATE', $update_array) ."
 					WHERE feed_id = {$feed_config['feed_id']}";
 		$this->db->sql_query($sql);
 
-		return $return;
+		return false;
 	}
 
-	public function update_pending_feeds() {
+	public function update_pending_feeds()
+	{
 		$pending_feeds = $this->get_pending_feeds();
 
-		foreach ($pending_feeds as $feed) {
+		foreach ($pending_feeds as $feed)
+		{
 			$this->handle_feed($feed);
 		}
 	}
 
-	private function post(array $post_data, array $feed_config) {
+	private function post(array $post_data, array $feed_config)
+	{
 		if (!function_exists('submit_post'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
+		// TODO: test
+		var_dump($post_data);
 
 //		$entry = array_merge($entry, array(
 //			'post_time'	=> '',
@@ -193,10 +192,12 @@ class feeds_bot {
 //		submit_post('post'||'reply', $entry['subject'], $entry['username'], POST_NORMAL, null, &$entry);
 	}
 
-	private function feed_error(string $error, array $feed_config) {
+	private function feed_error($error, array $feed_config)
+	{
 		$sql = "UPDATE {$this->table} SET enabled = 0 WHERE feed_id = {$feed_config['feed_id']}";
 		$this->db->sql_query($sql);
 
-		$this->log->add('critical', $error);
+//		$this->log->add('critical', $error);
+		return $error;
 	}
 }

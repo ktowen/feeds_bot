@@ -91,7 +91,7 @@ class feeds_bot
 		}
 		catch (\Exception $e)
 		{
-			return $this->feed_error($e.getMessage(), $feed_config);
+			return $this->feed_error($e->getMessage(), $feed_config);
 		}
 
 		$last_entry_date = $feed_config['last_entry_date'];
@@ -111,7 +111,7 @@ class feeds_bot
 
 		$update_array = array(
 			'last_update'	=> time(),
-//			'last_entry_date'	=> $last_entry_date,
+			'last_entry_date'	=> $last_entry_date,
 		);
 
 		$sql = "UPDATE {$this->table} SET ". $this->db->sql_build_array('UPDATE', $update_array) ."

@@ -66,7 +66,7 @@ class feed_parser
 
 	public function get_tokens() {
 		$tokens = array(
-			// TOKEN_NAME 			=> array( method, 		entry)
+			// TOKEN_NAME 			=> array( method, 		in_entry)
 			'FEED_TITLE'			=> array('title',		false),
 			'FEED_DESCRIPTION'		=> array('description',	false),
 			'FEED_PUB_DATE'			=> array('pub_date',	false),
@@ -163,7 +163,7 @@ class feed_parser
 			$text = censor_text($text);
 		}
 
-		$text = $this->html_to_bbcode($text);
+		$text = $this->html_to_bbcode($text); //TODO
 		$text = strip_tags($text);
 
 		return $text;

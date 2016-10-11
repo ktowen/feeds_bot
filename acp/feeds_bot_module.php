@@ -262,6 +262,7 @@ class feeds_bot_module
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
 		));
+		$this->generate_token_list();
 	}
 
 	private function action_delete($feed_id, $action, $mode)
@@ -331,6 +332,21 @@ class feeds_bot_module
 		else
 		{
 			trigger_error($user->lang('FEEDS_BOT_FEED_UPDATED'). adm_back_link($this->u_action), E_USER_NOTICE);
+		}
+	}
+
+	private function generate_token_list()
+	{
+		global $phpbb_container, $template, $user;
+
+		$tokens = $phpbb_container->get('towen.feeds_bot.core.feed_parser')->get_tokens();
+
+		foreach ($tokens as $token => $null)
+		{
+			$template->assign_block_vars('token', array(
+				'TOKEN'		=>	$token,
+				'EXPLAIN'	=>	$user->lang("FEED_BOT_TOKEN_{$token}_EXPLAIN"),
+			));
 		}
 	}
 }

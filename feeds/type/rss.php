@@ -13,7 +13,8 @@ namespace towen\feeds_bot\feeds\type;
  * Class rss
  * @package towen\feeds_bot\feeds\type
  */
-class rss extends \towen\feeds_bot\feeds\feed_base {
+class rss extends \towen\feeds_bot\feeds\feed_base
+{
 
 	/**
 	 * @return string
@@ -82,7 +83,8 @@ class rss extends \towen\feeds_bot\feeds\feed_base {
  * Class rss_entry
  * @package towen\feeds_bot\feeds\type
  */
-class rss_entry extends \towen\feeds_bot\feeds\entry_base {
+class rss_entry extends \towen\feeds_bot\feeds\entry_base
+{
 
 	/**
 	 * @param \SimpleXMLElement $xml

@@ -13,7 +13,8 @@ namespace towen\feeds_bot\feeds\type;
  * Class atom
  * @package towen\feeds_bot\feeds\type
  */
-class atom extends \towen\feeds_bot\feeds\feed_base {
+class atom extends \towen\feeds_bot\feeds\feed_base
+{
 
 	/**
 	 * @return string
@@ -81,7 +82,8 @@ class atom extends \towen\feeds_bot\feeds\feed_base {
  * Class atom_entry
  * @package towen\feeds_bot\feeds\type
  */
-class atom_entry extends \towen\feeds_bot\feeds\entry_base {
+class atom_entry extends \towen\feeds_bot\feeds\entry_base
+{
 
 	/**
 	 * @param \SimpleXMLElement $xml

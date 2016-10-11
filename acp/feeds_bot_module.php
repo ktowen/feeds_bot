@@ -43,13 +43,13 @@ class feeds_bot_module
                 $this->tpl_name = 'acp_feeds_bot';
                 $action = $request->variable('action', '');
 
-				if (!in_array($action, array('delete', 'add', 'edit', 'list' ,'update', 'check', 'view')))
+				if (!in_array($action, array('delete', 'add', 'edit', 'list' ,'update')))
 				{
 					$action = 'list';
 				}
 				$this->page_title = $user->lang['ACP_FEEDS_BOT_'.strtoupper($action)];
 
-                if (in_array($action, array('edit', 'delete','update', 'check', 'view')))
+                if (in_array($action, array('edit', 'delete','update')))
                 {
                     $feed_id = $request->variable('feed_id', 0);
 
@@ -63,17 +63,15 @@ class feeds_bot_module
                 {
                     case 'add':
                     case 'edit':
-						$this->action_add($action, $submit);
+						$this->action_add($feed_id, $action, $submit);
 					break;
 
 					case 'delete':
-						$this->action_delete();
+						$this->action_delete($feed_id, $action, $mode);
                     break;
 
 					case 'update':
-					break;
-
-					case 'check':
+						$this->action_update($feed_id);
 					break;
 
                     case 'list':
@@ -132,8 +130,9 @@ class feeds_bot_module
         }
     }
 
-	private function action_add($action, $submit) {
-		global $db, $template, $request;
+	private function action_add($feed_id, $action, $submit)
+	{
+		global $db, $template, $request, $user, $table_prefix, $phpbb_container;
 
 		$template_array = $error = array();
 
@@ -152,7 +151,8 @@ class feeds_bot_module
 			'body_template'		=> "{ENTRY_BODY}\n--\n{ENTRY_LINK}",
 		);
 
-		if ($action == 'edit') {
+		if ($action == 'edit')
+		{
 			$sql = 'SELECT ' . implode(array_keys($settings), ', ') . "
 									FROM {$table_prefix}feeds_bot
 									WHERE feed_id = {$feed_id}";
@@ -166,27 +166,39 @@ class feeds_bot_module
 			}
 		}
 
-		if ($submit) {
-			foreach($settings as $setting => $value) {
+		if ($submit)
+		{
+			foreach($settings as $setting => $value)
+			{
 				$unicode = in_array($setting, array('poster_username', 'subject_template', 'body_template'));
 				$settings[$setting] = $request->variable('feed_'.$setting, $settings[$setting], $unicode);
 			}
 
 			// validation
-			if ($settings['update_interval'] < 20) {
+			if ($settings['update_interval'] < 20)
+			{
 				$error[] = $user->lang('FEEDS_BOT_INVALID_UPDATE_INTERVAL');
 			}
 
 			if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $settings['url']) &&
-				!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $settings['url'])) {
+				!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $settings['url']))
+			{
 				$error[] = $user->lang('FEEDS_BOT_INVALID_URL');
 			}
 
-//							if (check_feeds($settings['url'])) {
-//								$error[] = $user->lang('FEEDS_BOT_INVALID_FEED'); //TODO
-//							}
+			$feed_bot = $phpbb_container->get('towen.feeds_bot.core.feeds_bot');
 
-			if ($settings['new_topic']) {
+			try
+			{
+				$feed_bot->load_feed($settings['url']);
+			}
+			catch (\Exception $e)
+			{
+				$error[] = $user->lang($e->getMessage());
+			}
+
+			if ($settings['new_topic'])
+			{
 				$sql = "SELECT forum_type
 									FROM {$table_prefix}forums
 									WHERE forum_id = {$settings['forum_id']}";
@@ -194,14 +206,17 @@ class feeds_bot_module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				if (!$row) {
+				if (!$row)
+				{
 					$error[] = $user->lang('FEEDS_BOT_NO_FORUM');
 				}
-				elseif ($row['forum_type'] != FORUM_POST) {
+				elseif ($row['forum_type'] != FORUM_POST)
+				{
 					$error[] = $user->lang('FEEDS_BOT_INVALID_FORUM');
 				}
 			}
-			else {
+			else
+			{
 				$sql = "SELECT topic_id
 									FROM {$table_prefix}topics
 									WHERE topic_id = {$settings['topic_id']}";
@@ -209,18 +224,22 @@ class feeds_bot_module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				if (!$row) {
+				if (!$row)
+				{
 					$error[] = $user->lang('FEEDS_BOT_NO_TOPIC');
 				}
 			}
 
-			if (empty($error)) {
-				if ($mode == 'edit') {
+			if (empty($error))
+			{
+				if ($action == 'edit')
+				{
 					$sql = "UPDATE {$table_prefix}feeds_bot SET " . $db->sql_build_array('UPDATE', $settings) . "
 											WHERE feed_id = {$feed_id}";
 					$message = $user->lang("FEEDS_BOT_FEED_UPDATED");
 				}
-				else {
+				else
+				{
 					$sql = "INSERT INTO {$table_prefix}feeds_bot " . $db->sql_build_array('INSERT', $settings);
 					$message = $user->lang("FEEDS_BOT_FEED_ADDED");
 				}
@@ -230,7 +249,8 @@ class feeds_bot_module
 			}
 		}
 
-		foreach ($settings as $setting => $value) {
+		foreach ($settings as $setting => $value)
+		{
 			$key = 'FEED_'.strtoupper($setting);
 			$template->assign_var($key, $value);
 		}
@@ -244,8 +264,9 @@ class feeds_bot_module
 		));
 	}
 
-	private function action_delete() {
-		global $db, $phpbb_log, $user;
+	private function action_delete($feed_id, $action, $mode)
+	{
+		global $db, $phpbb_log, $user, $table_prefix;
 
 		if (confirm_box(true))
 		{
@@ -265,12 +286,51 @@ class feeds_bot_module
 		}
 	}
 
-	private function action_list() {
-		global $template;
+	private function action_list()
+	{
+		global $db, $template, $table_prefix, $user;
 
+		$sql = "SELECT feed_id, enabled, url, last_update FROM {$table_prefix}feeds_bot";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('feeds', array(
+				'URL'	=> $row['url'],
+				'ENABLED'	=> $row['enabled'] ? $user->lang['YES'] : $user->lang['NO'],
+				'LAST_UPDATE'	=> $user->format_date($row['last_update']),
+				'U_EDIT'	=> append_sid($this->u_action, array('action'=>'edit', 'feed_id'=>$row['feed_id'])),
+				'U_UPDATE'	=> append_sid($this->u_action, array('action'=>'update', 'feed_id'=>$row['feed_id'])),
+				'U_DELETE'	=> append_sid($this->u_action, array('action'=>'delete', 'feed_id'=>$row['feed_id'])),
+			));
+		}
+		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'U_ACTION'			=> $this->u_action . '&amp;action=add',
+			'U_ACTION'			=> "{$this->u_action}&amp;action=add",
 		));
+	}
+
+	private function action_update($feed_id)
+	{
+		global $phpbb_container, $user;
+		$feed_bot = $phpbb_container->get('towen.feeds_bot.core.feeds_bot');
+		$feed_config = $feed_bot->get_feeds_data(array($feed_id));
+
+		if (empty($feed_config))
+		{
+			trigger_error($user->lang['FEEDS_BOT_NO_FEED'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		$error = $feed_bot->handle_feed($feed_config[0]);
+
+		if ($error)
+		{
+			trigger_error($user->lang($error). adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		else
+		{
+			trigger_error($user->lang('FEEDS_BOT_FEED_UPDATED'). adm_back_link($this->u_action), E_USER_NOTICE);
+		}
 	}
 }

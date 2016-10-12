@@ -40,7 +40,8 @@ class feeds_bot
 	public function get_feeds_data(array $feeds_id)
 	{
 		$sql = "SELECT feed_id, enabled, url, update_interval, last_update, last_entry_date, poster_username,
-					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, subject_template, body_template
+					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, parse_bbcode, strip_html,
+					subject_template, body_template
 				FROM {$this->table}
 				WHERE " . $this->db->sql_in_set('feed_id', $feeds_id);
 		$result = $this->db->sql_query($sql);
@@ -54,7 +55,8 @@ class feeds_bot
 	{
 		$now = time();
 		$sql = "SELECT feed_id, enabled, url, update_interval, last_update, last_entry_date, poster_username,
-					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, subject_template, body_template
+					new_topic, forum_id, topic_id, max_msg, enqueue, censor_text, parse_bbcode, strip_html,
+					subject_template, body_template
 				FROM {$this->table}
 				WHERE update_interval + last_update <= {$now} AND enabled = 1";
 		$result = $this->db->sql_query($sql);

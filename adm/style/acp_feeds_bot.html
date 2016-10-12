@@ -72,6 +72,16 @@
                 <label><input type="radio" class="radio" name="feed_censor_text" value="0"<!-- IF not FEED_CENSOR_TEXT --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
         </dl>
         <dl>
+            <dt><label for="feed_parse_bbcode">{L_FEED_PARSE_BBCODE}</label><br /><span>{L_FEED_PARSE_BBCODE_EXPLAIN}</span></dt>
+            <dd><label><input type="radio" class="radio" id="feed_parse_bbcode" name="feed_parse_bbcode" value="1"<!-- IF FEED_PARSE_BBCODE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+                <label><input type="radio" class="radio" name="feed_parse_bbcode" value="0"<!-- IF not FEED_PARSE_BBCODE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+        </dl>
+        <dl>
+            <dt><label for="feed_strip_html">{L_FEED_STRIP_HTML_TEXT}</label><br /><span>{L_FEED_STRIP_HTML_EXPLAIN}</span></dt>
+            <dd><label><input type="radio" class="radio" id="feed_strip_html" name="feed_strip_html" value="1"<!-- IF FEED_STRIP_HTML --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+                <label><input type="radio" class="radio" name="feed_strip_html" value="0"<!-- IF not FEED_STRIP_HTML --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+        </dl>
+        <dl>
             <dt><label for="feed_subject_template">{L_FEED_SUBJECT_TEMPLATE}</label><br /><span>{L_FEED_SUBJECT_TEMPLATE_EXPLAIN}</span></dt>
             <dd><input type="text" id="feed_subject_template" name="feed_subject_template" size="60" maxlength="255" value="{FEED_SUBJECT_TEMPLATE}" /></dd>
         </dl>

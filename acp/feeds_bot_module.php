@@ -145,8 +145,10 @@ class feeds_bot_module
 			'forum_id'			=> 0,
 			'topic_id'			=> 0,
 			'max_msg'			=> 10,
-			'enqueue'			=> true,
+			'enqueue'			=> false,
 			'censor_text'		=> true,
+			'parse_bbcode'		=> true,
+			'strip_html'		=> true,
 			'subject_template'	=> "{ENTRY_TITLE}",
 			'body_template'		=> "{ENTRY_BODY}\n--\n{ENTRY_LINK}",
 		);

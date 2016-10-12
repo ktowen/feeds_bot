@@ -162,9 +162,14 @@ class feed_parser
 
 			$text = censor_text($text);
 		}
-
-		$text = $this->html_to_bbcode($text); //TODO
-		$text = strip_tags($text);
+		if ($feed_config['parse_bbcode'])
+		{
+			$text = $this->html_to_bbcode($text);
+		}
+		if ($feed_config['strip_html'])
+		{
+			$text = strip_tags($text);
+		}
 
 		return $text;
 	}

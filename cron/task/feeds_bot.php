@@ -34,7 +34,6 @@ class feeds_bot extends \phpbb\cron\task\base
 
 	public function should_run()
 	{
-//		return $this->config['feeds_bot_last_gc'] < time() - $this->config['feeds_bot_gc'];
-		return $this->config['feeds_bot_last_gc'] < time() - 10; //$this->config['feeds_bot_gc'];
+		return $this->config['feeds_bot_last_gc'] < time() - $this->config['feeds_bot_gc'];
 	}
 }

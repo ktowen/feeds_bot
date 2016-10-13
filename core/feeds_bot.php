@@ -98,6 +98,7 @@ class feeds_bot
 
 		$last_entry_date = $feed_config['last_entry_date'];
 
+		$this->user_hack();
 		foreach ($feed_object->entries() as $entry)
 		{
 			if ($entry->pub_date() > $feed_config['last_entry_date'])
@@ -110,6 +111,7 @@ class feeds_bot
 				$this->post($post_data, $feed_config);
 			}
 		}
+		$this->user_hack(true);
 
 		$update_array = array(
 			'last_update'	=> time(),
@@ -139,59 +141,48 @@ class feeds_bot
 		{
 			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
-		// TODO: test
-		var_dump($post_data);
 
-//		$entry = array_merge($entry, array(
-//			'post_time'	=> '',
-//			'force_approved_state'	=> '', //ITEM_APPROVED, ITEM_UNAPPROVED
-//			'forum_id'	=> '',
-//			'topic_id'	=> '',
-//			'bbcode_bitfield'	=> '',
-//			'bbcode_uid'	=> '',
-//			'message'	=> '',
-//			'message_md5'	=> '',
-//
-//		));
+		$poll = $uid = $bitfield = '';
+		generate_text_for_storage($post_data['content'], $uid, $bitfield, $flags, $feed_config['parse_bbcode'], true, true);
 
-//		$data = array(
-//			'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
-//			'topic_first_post_id'	=> (isset($post_data['topic_first_post_id'])) ? (int) $post_data['topic_first_post_id'] : 0,
-//			'topic_last_post_id'	=> (isset($post_data['topic_last_post_id'])) ? (int) $post_data['topic_last_post_id'] : 0,
-//			'topic_time_limit'		=> (int) $post_data['topic_time_limit'],
-//			'topic_attachment'		=> (isset($post_data['topic_attachment'])) ? (int) $post_data['topic_attachment'] : 0,
-//			'post_id'				=> (int) $post_id,
-//			'topic_id'				=> (int) $topic_id,
-//			'forum_id'				=> (int) $forum_id,
-//			'icon_id'				=> 0,
-//			'poster_id'				=> ANONYMOUS,
-//			'enable_sig'			=> false,
-//			'enable_bbcode'			=> (bool) $post_data['enable_bbcode'],
-//			'enable_smilies'		=> (bool) $post_data['enable_smilies'],
-//			'enable_urls'			=> (bool) $post_data['enable_urls'],
-//			'enable_indexing'		=> (bool) $post_data['enable_indexing'],
-//			'message_md5'			=> (string) $message_md5,
-//			'post_checksum'			=> (isset($post_data['post_checksum'])) ? (string) $post_data['post_checksum'] : '',
-//			'post_edit_reason'		=> $post_data['post_edit_reason'],
-//			'post_edit_user'		=> ($mode == 'edit') ? $user->data['user_id'] : ((isset($post_data['post_edit_user'])) ? (int) $post_data['post_edit_user'] : 0),
-//			'forum_parents'			=> $post_data['forum_parents'],
-//			'forum_name'			=> $post_data['forum_name'],
-//			'notify'				=> $notify,
-//			'notify_set'			=> $post_data['notify_set'],
-//			'poster_ip'				=> (isset($post_data['poster_ip'])) ? $post_data['poster_ip'] : $user->ip,
-//			'post_edit_locked'		=> (int) $post_data['post_edit_locked'],
-//			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
-//			'bbcode_uid'			=> $message_parser->bbcode_uid,
-//			'message'				=> $message_parser->message,
-//			'attachment_data'		=> $message_parser->attachment_data,
-//			'filename_data'			=> $message_parser->filename_data,
-//			'topic_status'			=> $post_data['topic_status'],
-//
-//			'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
-//			'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
-//		);
+		$data = array(
+			'forum_id'      	=> $feed_config['forum_id'],
+			'icon_id'			=> false,
+			'poster_id'			=> ANONYMOUS,
 
-//		submit_post('post'||'reply', $entry['subject'], $entry['username'], POST_NORMAL, null, &$entry);
+			'enable_bbcode'     => $feed_config['parse_bbcode'],
+			'enable_smilies'    => true,
+			'enable_urls'       => true,
+			'enable_sig'        => true,
+
+			'message'       	=> $post_data['content'],
+			'message_md5'   	=> md5($post_data['content']),
+
+			'bbcode_bitfield'   => $bitfield,
+			'bbcode_uid'        => $uid,
+
+			'post_edit_locked'  => 0,
+			'topic_title'       => $post_data['title'],
+			'notify_set'        => false,
+			'notify'            => false,
+			'post_time'         => 0,
+			'forum_name'        => '',
+			'enable_indexing'   => true,
+
+			'force_approved_state'	=> $feed_config['enqueue'] ? ITEM_UNAPPROVED : ITEM_APPROVED,
+		);
+
+		if ($feed_config['new_topic'])
+		{
+			$mode = 'post';
+		}
+		else
+		{
+			$mode = 'reply';
+			$data['topic_id']= $feed_config['topic_id'];
+		}
+
+		submit_post($mode, $post_data['title'], $feed_config['poster_username'], POST_NORMAL, $poll, $data);
 	}
 
 	private function feed_error($error, array $feed_config)
@@ -201,5 +192,27 @@ class feeds_bot
 
 //		$this->log->add('critical', $error);
 		return $error;
+	}
+
+	private function user_hack($end = false)
+	{
+		global $user, $db;
+		static $user_data;
+
+		if (!$end)
+		{
+			$user_data = $user->data;
+
+			$sql = 'SELECT *, 0 as is_registered FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . ANONYMOUS;
+			$result = $db->sql_query($sql);
+			$user->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$user->data = $user_data;
+		}
+
 	}
 }

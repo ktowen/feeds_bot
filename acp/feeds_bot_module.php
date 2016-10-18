@@ -150,7 +150,7 @@ class feeds_bot_module
 			'parse_bbcode'		=> true,
 			'strip_html'		=> true,
 			'subject_template'	=> "{ENTRY_TITLE}",
-			'body_template'		=> "{ENTRY_BODY}\n--\n{ENTRY_LINK}",
+			'body_template'		=> "{ENTRY_CONTENT}\n--\n{ENTRY_LINK}",
 		);
 
 		if ($action == 'edit')

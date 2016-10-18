@@ -96,6 +96,7 @@ class feeds_bot
 			return $this->feed_error($e->getMessage(), $feed_config);
 		}
 
+		$feed_count = 0;
 		$last_entry_date = $feed_config['last_entry_date'];
 
 		$this->user_hack();
@@ -103,6 +104,12 @@ class feeds_bot
 		{
 			if ($entry->pub_date() > $feed_config['last_entry_date'])
 			{
+				if ($feed_count == $feed_config['max_msg'])
+				{
+					break;
+				}
+				$feed_count += 1;
+
 				if ($entry->pub_date() > $last_entry_date)
 				{
 					$last_entry_date = $entry->pub_date();

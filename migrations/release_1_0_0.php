@@ -33,7 +33,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
             array('module.add', array(
                 'acp', 'ACP_FEEDS_BOT', array(
                     'module_basename'	=> '\towen\feeds_bot\acp\feeds_bot_module',
-                    'modes'				=> array('list', 'config'),
+                    'modes'				=> array('manage', 'config'),
                 ),
             )),
 
@@ -68,7 +68,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
                     'KEYS' => array(
                         'update_interval'   => array('INDEX', 'update_interval'),
                         'last_update'       => array('INDEX', 'last_update'),
-                        'state'       		=> array('INDEX', 'state'),
+                        'enabled'       		=> array('INDEX', 'enabled'),
                     ),
                 ),
             ),

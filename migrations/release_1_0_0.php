@@ -28,6 +28,7 @@ class release_1_0_0 extends \phpbb\db\migration\migration
             array('config.add', array('feeds_bot_user_agent', '')),
 
             array('permission.add', array('a_towen_feeds_bot_manage')),
+			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'a_towen_feeds_bot_manage')),
 
             array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_FEEDS_BOT')),
             array('module.add', array(

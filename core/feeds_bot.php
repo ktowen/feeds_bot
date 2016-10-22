@@ -93,7 +93,7 @@ class feeds_bot
 		}
 		catch (\Exception $e)
 		{
-			return $this->feed_error($e->getMessage(), $feed_config);
+			return $this->feed_error('LOG_'.$e->getMessage(), $feed_config);
 		}
 
 		$feed_count = 0;
@@ -197,7 +197,9 @@ class feeds_bot
 		$sql = "UPDATE {$this->table} SET enabled = 0 WHERE feed_id = {$feed_config['feed_id']}";
 		$this->db->sql_query($sql);
 
-//		$this->log->add('critical', $error);
+		$data = array($feed_config['feed_id'], $feed_config['feed_url']);
+		$this->log->add('critical', false, false, $error, false, $data);
+
 		return $error;
 	}
 

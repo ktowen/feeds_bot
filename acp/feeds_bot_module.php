@@ -42,6 +42,7 @@ class feeds_bot_module
             case 'manage':
                 $this->tpl_name = 'acp_feeds_bot';
                 $action = $request->variable('action', '');
+				$feed_id = $request->variable('feed_id', 0);
 
 				if (!in_array($action, array('delete', 'add', 'edit', 'list' ,'update')))
 				{
@@ -49,14 +50,9 @@ class feeds_bot_module
 				}
 				$this->page_title = $user->lang['ACP_FEEDS_BOT_'.strtoupper($action)];
 
-                if (in_array($action, array('edit', 'delete','update')))
-                {
-                    $feed_id = $request->variable('feed_id', 0);
-
-                    if (!$feed_id)
-                    {
-                        trigger_error($user->lang['FEEDS_BOT_NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-                    }
+				if (!$feed_id && in_array($action, array('edit', 'delete','update')))
+				{
+					trigger_error($user->lang['FEEDS_BOT_NO_FEED_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
                 }
 
                 switch($action)
@@ -99,7 +95,7 @@ class feeds_bot_module
 
                 if ($feeds_bot_gc < 20)
                 {
-                    $error[] = $user->lang['FEEDS_BOT_GC_INVALID'];
+                    $error[] = $user->lang['FEEDS_BOT_INVALID_UPDATE_INTERVAL'];
                 }
 
                 // Do not write values if there is an error
@@ -109,7 +105,8 @@ class feeds_bot_module
                     set_config('feeds_bot_user_agent', $feeds_bot_user_agent);
                     set_config('feeds_bot_gc', $feeds_bot_gc * 60);
 
-                    //$phpbb_log->add('admin', 'LOG_FEEDS_BOT_CONFIG_UPDATED'); // TODO
+					$phpbb_log->add('admin', $user->data['user_id'], $user->data['user_ip'],
+						'LOG_FEEDS_BOT_CONFIG_UPDATED', false);
 
                     trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action), E_USER_NOTICE);
                 }
@@ -132,7 +129,7 @@ class feeds_bot_module
 
 	private function action_add($feed_id, $action, $submit)
 	{
-		global $db, $template, $request, $user, $table_prefix, $phpbb_container;
+		global $db, $template, $request, $user, $table_prefix, $phpbb_container, $phpbb_log;
 
 		$template_array = $error = array();
 
@@ -238,15 +235,21 @@ class feeds_bot_module
 				{
 					$sql = "UPDATE {$table_prefix}feeds_bot SET " . $db->sql_build_array('UPDATE', $settings) . "
 											WHERE feed_id = {$feed_id}";
-					$message = $user->lang("FEEDS_BOT_FEED_UPDATED");
+					$message = $user->lang("FEEDS_BOT_FEED_EDITED");
+					$log = 'LOG_FEEDS_BOT_FEED_EDITED';
 				}
 				else
 				{
 					$sql = "INSERT INTO {$table_prefix}feeds_bot " . $db->sql_build_array('INSERT', $settings);
 					$message = $user->lang("FEEDS_BOT_FEED_ADDED");
+					$log = 'LOG_FEEDS_BOT_FEED_ADDED';
 				}
 
 				$db->sql_query($sql);
+
+				$phpbb_log->add('admin', $user->data['user_id'], $user->data['user_ip'],
+					$log, false, array($settings['url']));
+
 				trigger_error($message . adm_back_link($this->u_action), E_USER_NOTICE);
 			}
 		}
@@ -260,6 +263,8 @@ class feeds_bot_module
 		$template->assign_vars(array(
 			'S_EDIT' => true,
 			'U_ACTION' => $this->u_action . "&amp;action={$action}" . ($action=='edit' ? "&amp;feed_id={$feed_id}" : ''),
+
+			'L_ACTION_TITLE'			=> $this->page_title,
 
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
@@ -276,7 +281,8 @@ class feeds_bot_module
 			$sql = 'DELETE FROM ' . "{$table_prefix}feeds_bot" . " WHERE feed_id = {$feed_id}";
 			$db->sql_query($sql);
 
-			//$phpbb_log->add('admin', 'LOG_FEEDS_BOT_FEED_DELETED'); TODO
+			$phpbb_log->add('admin', $user->data['user_id'], $user->data['user_ip'],
+				'LOG_FEEDS_BOT_FEED_DELETED', false);
 			trigger_error($user->lang['FEEDS_BOT_FEED_DELETED'] . adm_back_link($this->u_action));
 		}
 		else
@@ -347,7 +353,7 @@ class feeds_bot_module
 		{
 			$template->assign_block_vars('token', array(
 				'TOKEN'		=>	$token,
-				'EXPLAIN'	=>	$user->lang("FEED_BOT_TOKEN_{$token}_EXPLAIN"),
+				'EXPLAIN'	=>	$user->lang("TOKEN_{$token}_EXPLAIN"),
 			));
 		}
 	}

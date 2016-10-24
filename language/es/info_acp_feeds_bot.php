@@ -34,6 +34,14 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, array(
-    'ZZ_ZZZZ'			=> 'zzzzzzzzzz',
+    'ACP_FEEDS_BOT'			=> 'Feeds Bot',
+    'ACP_FEEDS_BOT_MANAGE'			=> 'Administrar feeds',
+    'ACP_FEEDS_BOT_CONFIG'			=> 'Configuración',
 
+	'LOG_FEEDS_BOT_FEED_DELETED'	=> 'TODO',
+	'LOG_FEEDS_BOT_FEED_ADDED'	=> 'TODO',
+	'LOG_FEEDS_BOT_FEED_EDITED'	=> 'TODO',
+	'LOG_FEEDS_BOT_CONFIG_UPDATED'	=> '<strong>TODO</strong><br />» %s',
+	'LOG_FEED_BOT_FEED_LOADER_ERROR'		=> 'TODO',
+	'LOG_FEED_BOT_FEED_PARSER_ERROR'		=> 'TODO',
 ));

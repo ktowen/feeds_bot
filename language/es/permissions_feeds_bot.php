@@ -34,6 +34,5 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, array(
-    'ZZ_ZZZZ'			=> 'zzzzzzzzzz',
-
+	'ACL_A_TOWEN_FEEDS_BOT_MANAGE'		=> 'Puede gestionar la extensión Feeds Bot',
 ));

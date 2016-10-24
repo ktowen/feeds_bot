@@ -3,7 +3,7 @@
 
 ## Description
 
-test
+A simple feed importer for phpbb
 
 ## Installation
 

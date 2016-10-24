@@ -38,10 +38,10 @@ $lang = array_merge($lang, array(
     'ACP_FEEDS_BOT_MANAGE'			=> 'Administrar feeds',
     'ACP_FEEDS_BOT_CONFIG'			=> 'Configuración',
 
-	'LOG_FEEDS_BOT_FEED_DELETED'	=> 'TODO',
-	'LOG_FEEDS_BOT_FEED_ADDED'	=> 'TODO',
-	'LOG_FEEDS_BOT_FEED_EDITED'	=> 'TODO',
-	'LOG_FEEDS_BOT_CONFIG_UPDATED'	=> '<strong>TODO</strong><br />» %s',
-	'LOG_FEED_BOT_FEED_LOADER_ERROR'		=> 'TODO',
-	'LOG_FEED_BOT_FEED_PARSER_ERROR'		=> 'TODO',
+	'LOG_FEEDS_BOT_FEED_DELETED'	=> '<strong>Feed eliminado dal Feeds Bot</strong><br />» Url: %s',
+	'LOG_FEEDS_BOT_FEED_ADDED'	=> '<strong>Feed agregado al Feeds Bot</strong><br />» Url: %s',
+	'LOG_FEEDS_BOT_FEED_EDITED'	=> '<strong>Feed editado del Feeds Bot</strong><br />» Url: %s',
+	'LOG_FEEDS_BOT_CONFIG_UPDATED'	=> '<strong>Cambiada configuración del Feeds Bot</strong>',
+	'LOG_FEED_BOT_FEED_LOADER_ERROR'		=> '<strong>No se pudo cargar el Feed. El Feed ha sido desactivado.</strong><br />» Url: %s',
+	'LOG_FEED_BOT_FEED_PARSER_ERROR'		=> '<strong>No se pudo analizar el Feed. El Feed ha sido desactivado.</strong><br />» Url: %s',
 ));

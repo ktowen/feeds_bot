@@ -216,7 +216,7 @@ class feeds_bot_module
 			}
 			else
 			{
-				$sql = "SELECT topic_id
+				$sql = "SELECT topic_id, forum_id
 									FROM {$table_prefix}topics
 									WHERE topic_id = {$settings['topic_id']}";
 				$result = $db->sql_query($sql);
@@ -226,6 +226,10 @@ class feeds_bot_module
 				if (!$row)
 				{
 					$error[] = $user->lang('FEEDS_BOT_NO_TOPIC');
+				}
+				else
+				{
+					$settings['forum_id'] = $row['forum_id'];
 				}
 			}
 

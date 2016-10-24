@@ -286,7 +286,7 @@ class feeds_bot_module
 			$db->sql_query($sql);
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->data['user_ip'],
-				'LOG_FEEDS_BOT_FEED_DELETED', false);
+				'LOG_FEEDS_BOT_FEED_DELETED', false, array($settings['url']));
 			trigger_error($user->lang['FEEDS_BOT_FEED_DELETED'] . adm_back_link($this->u_action));
 		}
 		else
